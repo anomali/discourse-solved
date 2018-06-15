@@ -87,7 +87,7 @@ SQL
       post.save!
 
       #Added for anomali-voting plugin:
-      user = User.find_by_id(Post.user_id)
+      user = User.find_by_id(post.user_id)
       user.anomali_vote_score += SiteSetting.points_per_accepted_answer
       user.save
       #End of addition for anomali-commenting plugin
@@ -144,7 +144,7 @@ SQL
       post.save!
 
       #Added for anomali-voting plugin:
-      user = User.find_by_id(Post.user_id)
+      user = User.find_by_id(post.user_id)
       user.anomali_vote_score -= SiteSetting.points_per_accepted_answer
       user.save
       #End of addition for anomali-commenting plugin
