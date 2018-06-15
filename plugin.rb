@@ -86,6 +86,12 @@ SQL
       topic.save!
       post.save!
 
+      #Added for anomali-voting plugin:
+      user = User.find_by_id(Post.user_id)
+      user.anomali_vote_score += SiteSetting.points_per_accepted_answer
+      user.save
+      #End of addition for anomali-commenting plugin
+
       if defined?(UserAction::SOLVED)
         UserAction.log_action!(
           action_type: UserAction::SOLVED,
@@ -136,6 +142,13 @@ SQL
       post.topic.custom_fields["accepted_answer_post_id"] = nil
       post.topic.save!
       post.save!
+
+      #Added for anomali-voting plugin:
+      user = User.find_by_id(Post.user_id)
+      user.anomali_vote_score -= SiteSetting.points_per_accepted_answer
+      user.save
+      #End of addition for anomali-commenting plugin
+
 
       # TODO remove_action! does not allow for this type of interface
       if defined? UserAction::SOLVED
