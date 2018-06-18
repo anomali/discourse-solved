@@ -75,6 +75,12 @@ SQL
           p2.custom_fields["is_accepted_answer"] = nil
           p2.save!
 
+          #Added for anomali-voting plugin:
+          user = User.find_by_id(p2.user_id)
+          user.anomali_vote_score -= SiteSetting.points_per_accepted_answer
+          user.save
+          #End of addition for anomali-commenting plugin
+
           if defined?(UserAction::SOLVED)
             UserAction.where(action_type: UserAction::SOLVED, target_post_id: p2.id).destroy_all
           end
