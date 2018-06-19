@@ -72,14 +72,17 @@ SQL
       accepted_id = topic.custom_fields["accepted_answer_post_id"].to_i
       if accepted_id > 0
         if p2 = Post.find_by(id: accepted_id)
-          p2.custom_fields["is_accepted_answer"] = nil
-          p2.save!
 
           #Added for anomali-voting plugin:
-          user = User.find_by_id(p2.user_id)
-          user.anomali_vote_score -= SiteSetting.points_per_accepted_answer
-          user.save
+           User.transaction do
+            user = User.lock.find_by_id(p2.user_id)
+            user.anomali_vote_score -= SiteSetting.points_per_accepted_answer
+            user.save
+          end
           #End of addition for anomali-commenting plugin
+          
+          p2.custom_fields["is_accepted_answer"] = nil
+          p2.save!
 
           if defined?(UserAction::SOLVED)
             UserAction.where(action_type: UserAction::SOLVED, target_post_id: p2.id).destroy_all
@@ -93,9 +96,11 @@ SQL
       post.save!
 
       #Added for anomali-voting plugin:
-      user = User.find_by_id(post.user_id)
-      user.anomali_vote_score += SiteSetting.points_per_accepted_answer
-      user.save
+      User.transaction do
+        user = User.lock.find_by_id(post.user_id)
+        user.anomali_vote_score += SiteSetting.points_per_accepted_answer
+        user.save
+      end
       #End of addition for anomali-commenting plugin
 
       if defined?(UserAction::SOLVED)
@@ -144,16 +149,18 @@ SQL
 
       guardian.ensure_can_accept_answer!(post.topic)
 
+      #Added for anomali-voting plugin:
+      User.transaction do
+        user = User.lock.find_by_id(post.user_id)
+        user.anomali_vote_score -= SiteSetting.points_per_accepted_answer
+        user.save
+      end
+      #End of addition for anomali-commenting plugin
+
       post.custom_fields["is_accepted_answer"] = nil
       post.topic.custom_fields["accepted_answer_post_id"] = nil
       post.topic.save!
       post.save!
-
-      #Added for anomali-voting plugin:
-      user = User.find_by_id(post.user_id)
-      user.anomali_vote_score -= SiteSetting.points_per_accepted_answer
-      user.save
-      #End of addition for anomali-commenting plugin
 
 
       # TODO remove_action! does not allow for this type of interface

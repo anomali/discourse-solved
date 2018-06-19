@@ -17,7 +17,7 @@ function clearAccepted(topic) {
   });
 }
 
-function unacceptPost(post) {
+export function unacceptPost(post) {
   if (!post.get('can_unaccept_answer')) { return; }
   const topic = post.topic;
 
@@ -34,7 +34,7 @@ function unacceptPost(post) {
   }).catch(popupAjaxError);
 }
 
-function acceptPost(post) {
+export function acceptPost(post) {
   const topic = post.topic;
 
   clearAccepted(topic);
@@ -71,7 +71,7 @@ function initializeWithApi(api) {
     const canUnaccept = attrs.can_unaccept_answer;
     const accepted = attrs.accepted_answer;
     const isOp = currentUser && currentUser.id === attrs.topicCreatedById;
-    const position = (!accepted && canAccept && !isOp) ? 'second-last-hidden' : 'first';
+    const position = 'first';
 
     if (canAccept) {
       return {

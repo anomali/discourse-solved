@@ -42,3 +42,23 @@
 aside.quote .title.title-only {
   padding: 12px;
 }
+
+.solution-indicator .solution-button {
+  font-size: 30px;
+  clear: both;
+  text-align: center;
+  opacity: .23;
+}
+
+.solution-indicator .solution-button.can-accept:hover {
+  opacity: .3;
+}
+
+.solution-indicator .solution-button.accepted {
+  color: green;
+  opacity: 1;
+}
+
+.solution-indicator .solution-button i.clickable {
+  cursor: pointer;
+}
