@@ -17,7 +17,12 @@ function clearAccepted(topic) {
   });
 }
 
-function unacceptPost(post) {
+let lock = false;
+
+export function unacceptPost(post) {
+  if(lock) return;
+  lock = true;
+
   if (!post.get('can_unaccept_answer')) { return; }
   const topic = post.topic;
 
@@ -32,9 +37,15 @@ function unacceptPost(post) {
     type: 'POST',
     data: { id: post.get('id') }
   }).catch(popupAjaxError);
+
+  setTimeout(function() {
+    lock = false;
+  }, 2000);
 }
 
-function acceptPost(post) {
+export function acceptPost(post) {
+  if(lock) return;
+  lock = true;
   const topic = post.topic;
 
   clearAccepted(topic);
@@ -55,6 +66,9 @@ function acceptPost(post) {
     type: 'POST',
     data: { id: post.get('id') }
   }).catch(popupAjaxError);
+  setTimeout(function() {
+    lock = false;
+  }, 2000);
 }
 
 function initializeWithApi(api) {
@@ -71,7 +85,7 @@ function initializeWithApi(api) {
     const canUnaccept = attrs.can_unaccept_answer;
     const accepted = attrs.accepted_answer;
     const isOp = currentUser && currentUser.id === attrs.topicCreatedById;
-    const position = (!accepted && canAccept && !isOp) ? 'second-last-hidden' : 'first';
+    const position = 'first';
 
     if (canAccept) {
       return {
@@ -133,6 +147,7 @@ function initializeWithApi(api) {
 
   api.attachWidgetAction('post', 'acceptAnswer', function() {
     const post = this.model;
+
     const current = post.get('topic.postStream.posts').filter(p => {
       return p.get('post_number') === 1 || p.get('accepted_answer');
     });
