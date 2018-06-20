@@ -40,7 +40,7 @@ export function unacceptPost(post) {
 
   setTimeout(function() {
     lock = false;
-  }, 500);
+  }, 2000);
 }
 
 export function acceptPost(post) {
@@ -68,7 +68,7 @@ export function acceptPost(post) {
   }).catch(popupAjaxError);
   setTimeout(function() {
     lock = false;
-  }, 500);
+  }, 2000);
 }
 
 function initializeWithApi(api) {
